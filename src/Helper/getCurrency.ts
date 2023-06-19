@@ -10,3 +10,6 @@ export const getCurrency = (chainId: number | undefined) => {
       return undefined;
   }
 };
+
+
+export const PriceInMatic = 110

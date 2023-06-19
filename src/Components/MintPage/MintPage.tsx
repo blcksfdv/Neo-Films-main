@@ -11,7 +11,7 @@ import {
   StepLabel,
   Stepper,
 } from "@mui/material";
-
+import { PriceInMatic } from "../../Helper/getCurrency";
 import { useWeb3React } from "@web3-react/core";
 import { useSnackbar } from "notistack";
 import { BigNumber, ethers } from "ethers";
@@ -41,7 +41,7 @@ export const MAX_SUPPLY = 3333;
 const TESTNET = true;
 
 const MintPage = () => {
-  const { account, provider, chainId } = useWeb3React();
+  const { account, provider, chainId, isActive, accounts } = useWeb3React();
   const [activeStep, setActiveStep] = useState(0);
   const [openModal, setOpenModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -65,11 +65,11 @@ const MintPage = () => {
   // console.log({ isWhiteListed, isFetchLoading, minted, mintedPercentage, startTime, fetchError });
   const { network } = useNetwork();
   const currencySymbol = network?.connectInfo.nativeCurrency.symbol;
-  const crossmintPrice = parseInt(import.meta.env.VITE_CROSSMINT_PRICE!);
+  const crossmintPrice = Number(PriceInMatic);
 
   const currentNetwork = networkConfig[POLYGON_MAINNET];
 
-  console.log("crossmintPrice", crossmintPrice);
+  console.log("account", account);
 
   const handleClaimReserved = async () => {
     try {
@@ -206,6 +206,8 @@ const MintPage = () => {
     setAmount((prev) => parseFloat(new Decimal(prev).add(1).toString()));
   };
 
+  console.log("active", isActive);
+
   const handleCloseConfettiModal = () => setConfettiModal(false);
   const handleCloseModal = () => setOpenModal(false);
   const handleOpenModal = () => setOpenModal(true);
@@ -321,7 +323,13 @@ const MintPage = () => {
   const mintedPercentage = ((MintedAmount! / MAX_SUPPLY) * 100).toFixed(0);
   return (
     <div className={"py-5 sm:py-10 text-white"}>
-      <div className={"max-w-4xl m-auto px-5 text-center"}>
+      {openModal && (
+        <WalletConnectModal
+          handleCloseModal={handleCloseModal}
+          openModal={openModal}
+        />
+      )}
+      {/* <div className={"max-w-4xl m-auto px-5 text-center"}>
         <h1 className={"text-md"}>
           Enter the # you want to purchase. You will automatically receive these
           NFTs into your wallet.
@@ -330,7 +338,7 @@ const MintPage = () => {
           For the new B2G1 deal, purchases in multiples of 2 will be rewarded by
           a free, claimable, NFT [e.g. purchase 10, receive 5 free].{" "}
         </h1>
-      </div>
+      </div> */}
       <div className="img rounded-3xl w-96 cursor-pointer hover:scale-125 hover:rotate-3 m-auto pt-5">
         <img src={neoHeroimage} alt="" className={"rounded-3xl"} />
       </div>
@@ -359,7 +367,21 @@ const MintPage = () => {
                 mintedPercentage={mintedPercentage}
                 isLoading={MintedAmount === undefined}
               />
-              {chainId === POLYGON_MAINNET && (
+              {!isActive && (
+                <div>
+                  <button
+                    className="bg-gradient-to-r m-auto from-purple-700 to-[#AB17DF] rounded-md text-white p-2 flex flex-row justify-center items-center gap-3"
+                    onClick={handleOpenModal}
+                  >
+                    <GiWallet />
+                    <span className="font-extrabold text-base ">
+                      Connect Wallet
+                    </span>
+                  </button>
+                </div>
+              )}
+
+              {chainId === POLYGON_MAINNET && isActive && (
                 <Stepper activeStep={activeStep} orientation="vertical">
                   <Step className="">
                     <StepLabel>
@@ -373,11 +395,11 @@ const MintPage = () => {
                       <h1 className="font-bold text-lg text-white">
                         Select the amount you want to mint to your wallet
                       </h1>
-                      <span>
+                      {/* <span>
                         Even if you mint with Crossmint it will be minted to
                         your wallet. If you want to mint to a CrossMint account,
                         please disconnect your wallet.
-                      </span>
+                      </span> */}
                     </StepLabel>
                     <StepContent>
                       <Box className={"text-green-500"}>
@@ -552,7 +574,8 @@ const MintPage = () => {
                   </Step>
                 </Stepper>
               )}
-              {chainId === undefined && (
+
+              {1 != 1 && (
                 <Stepper
                   activeStep={activeStep}
                   orientation="vertical"
@@ -624,11 +647,11 @@ const MintPage = () => {
                           </span>
                         </button>
                         <CrossmintPayButton
-                        mintTo=""
+                          mintTo=""
                           clientId="919d666c-fa5a-4fab-a166-6f1960f873d3"
                           mintConfig={{
                             type: "erc-721",
-                            totalPrice: (110 * amount).toString(),
+                            totalPrice: (crossmintPrice * amount).toString(),
                             amount: amount,
                             tipAmount: "0",
                             quantity: amount,
@@ -638,24 +661,17 @@ const MintPage = () => {
                         <CrossmintPayButton
                           clientId="919d666c-fa5a-4fab-a166-6f1960f873d3"
                           mintConfig={{
-                            type: 'erc-721',
-                            totalPrice: (110 * amount).toString(),
-                             amount: amount,
-                             tipAmount: "0",
+                            type: "erc-721",
+                            totalPrice: (crossmintPrice * amount).toString(),
+                            amount: amount,
+                            tipAmount: "0",
                             quantity: amount,
-                        
                           }}
                         />
                         <span className="text-white text-center">
                           If you pay with CrossMint without connecting your
                           wallet, a wallet will be created on your behalf.
                         </span>
-                        {openModal && (
-                          <WalletConnectModal
-                            handleCloseModal={handleCloseModal}
-                            openModal={openModal}
-                          />
-                        )}
                       </Box>
                     </StepContent>
                   </Step>
@@ -677,8 +693,11 @@ const MintPage = () => {
       {network?.chainId === POLYGON_MAINNET && (
         <div className={"max-w-4xl m-auto px-5"}>
           <h1 className={"text-md text-center"}>
-            Any free NFTs you are due, should show up automatically as a "claim"
-            option, after purchase.
+            {`If you choose to mint using Matic, any free NFTs you are owed via the buy-2-get-1 deal will automatically appear as a "claim". 
+
+If you choose to mint using ETH or a Credit Card, please open a ticket on Discord for your NFTs to be airdropped to your wallet. 
+
+For more information, please visit: https://discord.gg/neofilms.`}
           </h1>
         </div>
       )}
