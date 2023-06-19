@@ -69,7 +69,6 @@ const MintPage = () => {
 
   const currentNetwork = networkConfig[POLYGON_MAINNET];
 
-  console.log("account", account);
 
   const handleClaimReserved = async () => {
     try {
