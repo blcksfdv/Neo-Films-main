@@ -35,7 +35,7 @@ import networkConfig from "../../utils/config/networkConfig";
 import Decimal from "decimal.js";
 import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
 import neoHeroimage from "../../assets/neoHeroImage.gif";
-
+import { useBalance } from "../../hooks/useBalance";
 export const MAX_SUPPLY = 3333;
 
 const TESTNET = true;
@@ -68,7 +68,7 @@ const MintPage = () => {
   const crossmintPrice = Number(PriceInMatic);
 
   const currentNetwork = networkConfig[POLYGON_MAINNET];
-
+  const {balance, error} = useBalance()
 
   const handleClaimReserved = async () => {
     try {
@@ -145,6 +145,7 @@ const MintPage = () => {
       setIsLoading(true);
       if (network?.chainId === 1) {
         const signer = provider?.getSigner();
+
         const contract = new ethers.Contract(
           network?.film?.contractAddress ?? "",
           network?.film?.abi ?? [],
@@ -161,33 +162,42 @@ const MintPage = () => {
         });
         await tx.wait();
       } else {
-        const signer = provider?.getSigner();
-        const contract = new ethers.Contract(
-          network?.film?.contractAddress ?? "",
-          network?.film?.abi ?? [],
-          signer
-        );
-        const estimation = await contract.estimateGas.publicMintToWithTip(
-          account,
-          amount,
-          0,
-          {
+        if(Number(balance) >= amount * price){
+          const signer = provider?.getSigner();
+          const contract = new ethers.Contract(
+            network?.film?.contractAddress ?? "",
+            network?.film?.abi ?? [],
+            signer
+          );
+          const estimation = await contract.estimateGas.publicMintToWithTip(
+            account,
+            amount,
+            0,
+            {
+              value: ethers.utils.parseEther((amount * price).toFixed(18)),
+            }
+          );
+          let tx = await contract.publicMintToWithTip(account, amount, 0, {
+            gasLimit: estimation,
             value: ethers.utils.parseEther((amount * price).toFixed(18)),
+          });
+          await tx.wait();
+          if (amount > 1) {
+            await btgoRemainning();
           }
-        );
-        let tx = await contract.publicMintToWithTip(account, amount, 0, {
-          gasLimit: estimation,
-          value: ethers.utils.parseEther((amount * price).toFixed(18)),
-        });
-        await tx.wait();
+          enqueueSnackbar("Minted " + amount + " NFTs, please view on OpenSea", {
+            variant: "success",
+          });
+  
+        }else{
+       
+          
+          enqueueSnackbar(getErrorMessage(error, "Not enough matic", false));
+        }
+        
       }
-      if (amount > 1) {
-        await btgoRemainning();
-      }
-      enqueueSnackbar("Minted " + amount + " NFTs, please view on OpenSea", {
-        variant: "success",
-      });
       setIsLoading(false);
+   
     } catch (error) {
       console.error({ error });
       enqueueSnackbar(getErrorMessage(error, "Error occured", false));
@@ -549,7 +559,7 @@ const MintPage = () => {
                           clientId="919d666c-fa5a-4fab-a166-6f1960f873d3"
                           mintConfig={{
                             type: "erc-721",
-                            totalPrice: (crossmintPrice * amount).toString(),
+                            totalPrice: (price * amount).toString(),
                             amount: amount,
                             tipAmount: "0",
                             quantity: amount,
@@ -561,7 +571,7 @@ const MintPage = () => {
                           clientId="919d666c-fa5a-4fab-a166-6f1960f873d3"
                           mintConfig={{
                             type: "erc-721",
-                            totalPrice: (crossmintPrice * amount).toString(),
+                            totalPrice: (price * amount).toString(),
                             amount: amount,
                             tipAmount: "0",
                             quantity: amount,
