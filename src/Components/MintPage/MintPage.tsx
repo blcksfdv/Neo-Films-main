@@ -338,7 +338,7 @@ const MintPage = () => {
           openModal={openModal}
         />
       )}
-      {/* <div className={"max-w-4xl m-auto px-5 text-center"}>
+      <div className={"max-w-4xl m-auto px-5 text-center"}>
         <h1 className={"text-md"}>
           Enter the # you want to purchase. You will automatically receive these
           NFTs into your wallet.
@@ -347,7 +347,7 @@ const MintPage = () => {
           For the new B2G1 deal, purchases in multiples of 2 will be rewarded by
           a free, claimable, NFT [e.g. purchase 10, receive 5 free].{" "}
         </h1>
-      </div> */}
+      </div> 
       <div className="img rounded-3xl w-96 cursor-pointer hover:scale-125 hover:rotate-3 m-auto pt-5">
         <img src={neoHeroimage} alt="" className={"rounded-3xl"} />
       </div>
@@ -404,11 +404,11 @@ const MintPage = () => {
                       <h1 className="font-bold text-lg text-white">
                         Select the amount you want to mint to your wallet
                       </h1>
-                      {/* <span>
+                       {/* <span>
                         Even if you mint with Crossmint it will be minted to
                         your wallet. If you want to mint to a CrossMint account,
                         please disconnect your wallet.
-                      </span> */}
+                      </span>  */}
                     </StepLabel>
                     <StepContent>
                       <Box className={"text-green-500"}>
@@ -547,7 +547,7 @@ const MintPage = () => {
                               variant={"contained"}
                               fullWidth
                               onClick={handleMint}
-                              className="bg-gradient-to-r from-purple-700 to-[#AB17DF] rounded-md text-white p-2 flex flex-row justify-center items-center gap-3"
+                              className="bg-gradient-to-r from-[#1e1e1e] to-[#1e1e1e] rounded-md text-white p-2 flex flex-row justify-center items-center gap-3"
                               disabled={isLoading || amount === 0}
                             >
                               Mint For {(amount * price).toFixed(2)}{" "}
