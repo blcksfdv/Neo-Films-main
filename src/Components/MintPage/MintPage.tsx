@@ -70,7 +70,6 @@ const MintPage = () => {
   const currentNetwork = networkConfig[POLYGON_MAINNET];
   const {balance, error} = useBalance()
 
-console.log(amount);
 
 
   const handleClaimReserved = async () => {

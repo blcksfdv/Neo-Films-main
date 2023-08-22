@@ -12,4 +12,4 @@ export const getCurrency = (chainId: number | undefined) => {
 };
 
 
-export const PriceInMatic = 110
+export const PriceInMatic = 1
