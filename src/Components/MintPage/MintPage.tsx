@@ -155,10 +155,10 @@ const MintPage = () => {
         );
         let total = (amount * price).toString();
         console.log({ amount, account, price, total });
-        const estimation = await contract.estimateGas.mint(amount, account, {
+        const estimation = await contract.estimateGas.mintTo(account, amount, {
           value: ethers.utils.parseEther(total),
         });
-        let tx = await contract.mint(amount, account, {
+        let tx = await contract.mint(account, account, {
           gasLimit: estimation,
           value: ethers.utils.parseEther(total),
         });
@@ -171,15 +171,14 @@ const MintPage = () => {
             network?.film?.abi ?? [],
             signer
           );
-          const estimation = await contract.estimateGas.publicMintToWithTip(
+          const estimation = await contract.estimateGas.mintTo(
             account,
             amount,
-            0,
             {
               value: ethers.utils.parseEther((amount * price).toFixed(18)),
             }
           );
-          let tx = await contract.publicMintToWithTip(account, amount, 0, {
+          let tx = await contract.mintTo(account, amount, {
             gasLimit: estimation,
             value: ethers.utils.parseEther((amount * price).toFixed(18)),
           });
@@ -217,7 +216,6 @@ const MintPage = () => {
     setAmount((prev) => parseFloat(new Decimal(prev).add(1).toString()));
   };
 
-  console.log("active", isActive);
 
   const handleCloseConfettiModal = () => setConfettiModal(false);
   const handleCloseModal = () => setOpenModal(false);
