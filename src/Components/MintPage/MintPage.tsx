@@ -70,6 +70,9 @@ const MintPage = () => {
   const currentNetwork = networkConfig[POLYGON_MAINNET];
   const {balance, error} = useBalance()
 
+console.log(amount);
+
+
   const handleClaimReserved = async () => {
     try {
       setIsReservedFetchLoading(true);
@@ -556,25 +559,23 @@ const MintPage = () => {
                           </>
                         )}
                         <CrossmintPayButton
-                          clientId="919d666c-fa5a-4fab-a166-6f1960f873d3"
+                          clientId="b838c4fe-14e9-461f-84e2-6f3dddd6210d"
                           mintConfig={{
                             type: "erc-721",
                             totalPrice: (price * amount).toString(),
-                            amount: amount,
-                            tipAmount: "0",
-                            quantity: amount,
+                            amount: amount.toString(),
+                            _quantity: amount.toString(),
                           }}
                           mintTo={account}
                           paymentMethod="ETH"
                         />
                         <CrossmintPayButton
-                          clientId="919d666c-fa5a-4fab-a166-6f1960f873d3"
+                          clientId="b838c4fe-14e9-461f-84e2-6f3dddd6210d"
                           mintConfig={{
                             type: "erc-721",
                             totalPrice: (price * amount).toString(),
-                            amount: amount,
-                            tipAmount: "0",
-                            quantity: amount,
+                            amount: amount.toString(),
+                            _quantity: amount.toString(),
                           }}
                           mintTo={account}
                         />
