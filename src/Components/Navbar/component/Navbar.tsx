@@ -99,12 +99,14 @@ export const Navbar = () => {
                 <Link to={'/'}>
                     <img src={MAIN_LOGO} className='h-14 w-20' alt=""/>
                 </Link>
-                <div className='flex  flex-col justify-end'>
+                <div className='flex  flex-col justify-end gap-5'>
                     {
                         account && chainId ? (
                             <Fragment>
 
-                                <RightBlock>
+                                <RightBlock className='gap-3' style={{
+                                    gap:"8px"
+                                }}>
                                     <Box>
                                         {balance === undefined ? <CircularProgress size={"12px"}/> : error ?
                                             <Box>{error}</Box> :
@@ -121,7 +123,7 @@ export const Navbar = () => {
                                     {/*    items={networks.filter((network) => network !== Network.unsupportedChain)}*/}
                                     {/*/>*/}
                                     <span>Network: {getNetworkById(chainId)}</span>
-                                    <Button variant={'contained'}
+                                    <Button className='mx-2' variant={'contained'}
                                             onClick={() => handleDisconnect(setWalletType, connector, setChain)}>Disconnect</Button>
                                     {status&&<Box className={"ml-1 flex items-center gap-1"}>
                                         <Box>Status</Box>

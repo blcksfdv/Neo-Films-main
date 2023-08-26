@@ -34,7 +34,7 @@ import {
 import networkConfig from "../../utils/config/networkConfig";
 import Decimal from "decimal.js";
 import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
-import neoHeroimage from "../../assets/neoHeroImage.gif";
+import neoHeroimage from "../../../public/MINTED_OUT_100.png";
 import { useBalance } from "../../hooks/useBalance";
 export const MAX_SUPPLY = 3333;
 
@@ -145,25 +145,7 @@ const MintPage = () => {
   const handleMint = async () => {
     try {
       setIsLoading(true);
-      if (network?.chainId === 1) {
-        const signer = provider?.getSigner();
-
-        const contract = new ethers.Contract(
-          network?.film?.contractAddress ?? "",
-          network?.film?.abi ?? [],
-          signer
-        );
-        let total = (amount * price).toString();
-        console.log({ amount, account, price, total });
-        const estimation = await contract.estimateGas.mintTo(account, amount, {
-          value: ethers.utils.parseEther(total),
-        });
-        let tx = await contract.mint(account, account, {
-          gasLimit: estimation,
-          value: ethers.utils.parseEther(total),
-        });
-        await tx.wait();
-      } else {
+      if (network?.chainId === 137) {
         if(Number(balance) >= amount * price){
           const signer = provider?.getSigner();
           const contract = new ethers.Contract(
@@ -196,9 +178,11 @@ const MintPage = () => {
           enqueueSnackbar(getErrorMessage(error, "Not enough matic", false));
         }
         
-      }
       setIsLoading(false);
-   
+      }else{
+        enqueueSnackbar(getErrorMessage(error, "switch back to polygon network to bring up the mint buttons", false));
+      }
+      
     } catch (error) {
       console.error({ error });
       enqueueSnackbar(getErrorMessage(error, "Error occured", false));
@@ -255,15 +239,15 @@ const MintPage = () => {
 
       const price = await contract.getPublicMintPrice();
       setPrice(parseFloat(ethers.utils.formatEther(price)));
-      const freeRemaining = await contract.getClaimFreeRemaining(account);
-      setFree(parseInt(freeRemaining._hex, 16));
-      const reservedTokens = await contract.getReservedTokens(account);
-      const tokenIds = Array.from(reservedTokens, (item: BigNumber) =>
-        item.toString()
-      );
-      setReservedTokens(tokenIds);
+      // const freeRemaining = await contract.getClaimFreeRemaining(account);
+      // setFree(parseInt(freeRemaining._hex, 16));
+      // const reservedTokens = await contract.getReservedTokens(account);
+      // const tokenIds = Array.from(reservedTokens, (item: BigNumber) =>
+      //   item.toString()
+      // );
+      // setReservedTokens(tokenIds);
 
-      await btgoRemainning();
+      // await btgoRemainning();
     } catch (error) {
       console.error({ error });
       enqueueSnackbar(getErrorMessage(error, "Error occured", false));
@@ -331,45 +315,33 @@ const MintPage = () => {
   }, []);
   const mintedPercentage = ((MintedAmount! / MAX_SUPPLY) * 100).toFixed(0);
   return (
-    <div className={"py-5 sm:py-10 text-white"}>
-      {openModal && (
+    <div className={"py-5 sm:py-10 text-white "}>
+      {/* {openModal && (
         <WalletConnectModal
           handleCloseModal={handleCloseModal}
           openModal={openModal}
         />
-      )}
-      <div className={"max-w-4xl m-auto px-5 text-center"}>
+      )} */}
+      <div className={"max-w-4xl m-auto px-5 text-center hidden"}>
         <h1 className={"text-md"}>
-          Enter the # you want to purchase. You will automatically receive these
-          NFTs into your wallet.
+         {`Enter the # you want to purchase. You will automatically receive these NFTs into your wallet.
+
+`}
         </h1>
         <h1 className={"text-md"}>
-          For the new B2G1 deal, purchases in multiples of 2 will be rewarded by
-          a free, claimable, NFT [e.g. purchase 10, receive 5 free].{" "}
+        {`For the new B2G1 deal, purchases in multiples of 2 will be rewarded by a free 3rd NFT [e.g. purchase 10, receive 5 free].`}
         </h1>
       </div> 
-      <div className="img rounded-3xl w-96 cursor-pointer hover:scale-125 hover:rotate-3 m-auto pt-5">
+      <div className="img rounded-3xl max-w-[450px] px-2 cursor-pointer  m-auto pt-5">
         <img src={neoHeroimage} alt="" className={"rounded-3xl"} />
       </div>
       <div className="flex flex-col w-full justify-center items-center py-5">
         <Paper
           className="navigation"
-          sx={{
-            p: 3, // px: 1,
-            transition: "all 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
-            transform: "translateY(0px)",
-            "&:hover": {
-              boxShadow: "0 4px 8px 0px rgb(0 0 0 / 30%)",
-              transform: "translateY(-4px)",
-              "& .card-img:after": {
-                transform: "rotate(25deg)",
-                top: "-30%",
-                opacity: 0.18,
-              },
-            },
-          }}
+       
+          
         >
-          <div className="flex flex-col justify-center w-full sm:w-[600px] gap-3 ">
+          <div className=" flex-col justify-center w-full sm:w-[600px] gap-3  hidden">
             <Fragment>
               <MintStatus
                 minted={MintedAmount}
@@ -390,7 +362,7 @@ const MintPage = () => {
                 </div>
               )}
 
-              {chainId === POLYGON_MAINNET && isActive && (
+              {(
                 <Stepper activeStep={activeStep} orientation="vertical">
                   <Step className="">
                     <StepLabel>
@@ -411,7 +383,7 @@ const MintPage = () => {
                       </span>  */}
                     </StepLabel>
                     <StepContent>
-                      <Box className={"text-green-500"}>
+                      {/* <Box className={"text-green-500"}>
                         {Free > 0 && chainId === POLYGON_MAINNET && (
                           <Box>
                             <div className={"mb-3"}>
@@ -508,7 +480,7 @@ const MintPage = () => {
                               <Divider className={"w-full bg-white"} />
                             </div>
                           )}
-                      </Box>
+                      </Box> */}
                       <Box
                         className={
                           "mt-3 flex flex-col items-center justify-center gap-2 border-2 border-solid border-gray-300 p-5 rounded-xl max-w-sm"
@@ -541,7 +513,7 @@ const MintPage = () => {
                             +
                           </Button>
                         </ButtonGroup>
-                        {chainId === POLYGON_MAINNET && (
+                        { (
                           <>
                             <Button
                               variant={"contained"}
@@ -560,7 +532,6 @@ const MintPage = () => {
                           mintConfig={{
                             type: "erc-721",
                             totalPrice: (price * amount).toString(),
-                            amount: amount.toString(),
                             _quantity: amount.toString(),
                           }}
                           mintTo={account}
@@ -571,7 +542,6 @@ const MintPage = () => {
                           mintConfig={{
                             type: "erc-721",
                             totalPrice: (price * amount).toString(),
-                            amount: amount.toString(),
                             _quantity: amount.toString(),
                           }}
                           mintTo={account}
@@ -697,18 +667,15 @@ const MintPage = () => {
         {openConfettiModal && <Confetti />}
       </div>
 
-      {network?.chainId === POLYGON_MAINNET && (
-        <div className={"max-w-4xl m-auto px-5"}>
+      
+        <div className={"max-w-4xl m-auto px-5 hidden"}>
           <h1 className={"text-md text-center"}>
-            {`If you choose to mint using Matic, any free NFTs you are owed via the buy-2-get-1 deal will automatically appear as a "claim". 
-
-If you choose to mint using ETH or a Credit Card, please open a ticket on Discord for your NFTs to be airdropped to your wallet. 
-
-For more information, please visit: https://discord.gg/neofilms.`}
+            {`If you choose to mint using Matic, multiples of 2 will be rewarded by a free 3rd NFT. If you choose to mint using ETH or a Credit Card, please open a ticket on Discord for your NFTs to be airdropped to your wallet. For more information, please visit: https://discord.gg/neofilms.`
+}
           </h1>
         </div>
-      )}
-      {network?.chainId === ETHEREUM_MAINNET && (
+      
+      {/* {network?.chainId === ETHEREUM_MAINNET && (
         <div className={"max-w-4xl m-auto px-5"}>
           <h1 className={"text-lg"}>
             When your purchase is complete, select the POLYGON option at the top
@@ -716,7 +683,7 @@ For more information, please visit: https://discord.gg/neofilms.`}
             option
           </h1>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
